@@ -1,6 +1,7 @@
 package com.example.spring_order_project.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,7 +23,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_order") //tb is because 'order' is a reserved word in some databases
-@JsonPropertyOrder({ "id", "moment", "orderStatus", "client", "items", "payment" })
+@JsonPropertyOrder({ "id", "moment", "orderStatus", "client", "items", "total", "payment" })
 public class Order implements Serializable {
     //private static final long serialVersionUID = 1L;
     
@@ -99,6 +100,16 @@ public class Order implements Serializable {
 
     public void setPayment(Payment payment) {
         this.payment = payment;
+    }
+
+
+    public BigDecimal getTotal() {
+        BigDecimal total = BigDecimal.ZERO;
+        for (OrderItem item : items) {
+            total = total.add(item.getSubTotal());
+        }
+
+        return total;
     }
 
 

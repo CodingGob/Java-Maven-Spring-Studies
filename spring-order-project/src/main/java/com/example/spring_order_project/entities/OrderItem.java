@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 
 import com.example.spring_order_project.entities.pk.OrderItemPK;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -12,6 +13,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_order_item")
+@JsonPropertyOrder({ "product", "quantity", "price", "subTotal" })
 public class OrderItem implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -63,6 +65,11 @@ public class OrderItem implements Serializable {
     
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+
+    public BigDecimal getSubTotal() {
+        return price.multiply(new BigDecimal(quantity));
     }
 
 
