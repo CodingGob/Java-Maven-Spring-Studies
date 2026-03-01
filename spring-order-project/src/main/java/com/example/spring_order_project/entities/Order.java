@@ -9,6 +9,7 @@ import com.example.spring_order_project.entities.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,13 +17,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_order") //tb is because 'order' is a reserved word in some databases
-@JsonPropertyOrder({ "id", "moment", "orderStatus", "client", "items" })
+@JsonPropertyOrder({ "id", "moment", "orderStatus", "client", "items", "payment" })
 public class Order implements Serializable {
-    private static final long serialVersionUID = 1L;
+    //private static final long serialVersionUID = 1L;
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,15 +40,10 @@ public class Order implements Serializable {
     @OneToMany(mappedBy = "id.order")
     private Set<OrderItem> items = new HashSet<>();
 
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    private Payment payment;
 
     public Order() {}
-
-    public Order(Order other) {
-        this.id = other.getId();
-        this.moment = other.getMoment();
-        this.orderStatus = other.getOrderStatus().getCode();
-        this.client = other.getClient();
-    }
 
     public Order(Long id, Instant moment, OrderStatus orderStatus, User client) {
         this.id = id;
@@ -94,6 +91,14 @@ public class Order implements Serializable {
     
     public Set<OrderItem> getItems() {
         return items;
+    }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
     }
 
 
