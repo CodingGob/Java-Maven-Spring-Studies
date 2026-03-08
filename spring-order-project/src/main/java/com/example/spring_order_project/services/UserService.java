@@ -23,4 +23,8 @@ public class UserService {
         Optional<User> obj = userRepository.findById(id);
         return obj.orElseThrow(() -> new RuntimeException("User not found."));
     }
+
+    public User insert(User obj) {
+        return userRepository.save(obj);
+    }
 }
