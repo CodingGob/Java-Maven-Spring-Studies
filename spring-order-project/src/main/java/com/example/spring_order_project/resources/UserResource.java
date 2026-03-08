@@ -16,6 +16,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.spring_order_project.entities.User;
 import com.example.spring_order_project.services.UserService;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @RestController
 @RequestMapping(value = "/users")
@@ -51,5 +53,11 @@ public class UserResource {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User obj) {
+        User updated = userService.update(id, obj);
+        return ResponseEntity.ok().body(updated);
     }
 }
