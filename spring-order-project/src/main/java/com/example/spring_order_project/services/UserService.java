@@ -12,6 +12,8 @@ import com.example.spring_order_project.repositories.UserRepository;
 import com.example.spring_order_project.services.exceptions.DatabaseException;
 import com.example.spring_order_project.services.exceptions.ResourceNotFoundException;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class UserService {
 
@@ -40,14 +42,20 @@ public class UserService {
             userRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
             throw new DatabaseException(e.getMessage());
+        } catch (RuntimeException e) {
+            e.printStackTrace();
         }
     }
 
     public User update(Long id, User obj) {
-        User entity = userRepository.getReferenceById(id);
-        updateData(entity, obj);
-
-        return userRepository.save(entity);
+        try {
+            User entity = userRepository.getReferenceById(id);
+            updateData(entity, obj);
+            
+            return userRepository.save(entity);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(id);
+        }
     }
 
 
