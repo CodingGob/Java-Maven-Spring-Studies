@@ -1,11 +1,13 @@
 package com.gobdev.spring_mongodb_social_api.resources;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gobdev.spring_mongodb_social_api.domain.User;
+import com.gobdev.spring_mongodb_social_api.dtos.UserDTO;
 import com.gobdev.spring_mongodb_social_api.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +23,12 @@ public class UserResource {
     private UserService userService;
 
     @GetMapping 
-    public ResponseEntity<List<User>> findAll() {
+    public ResponseEntity<List<UserDTO>> findAll() {
         List<User> users = userService.findAll();
-        return ResponseEntity.ok().body(users);
+        List<UserDTO> userDTOs = users.stream()
+            .map(x -> new UserDTO(x))
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(userDTOs);
     }
 }
