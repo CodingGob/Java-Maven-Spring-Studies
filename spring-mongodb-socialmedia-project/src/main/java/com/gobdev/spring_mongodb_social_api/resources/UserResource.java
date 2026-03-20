@@ -13,6 +13,8 @@ import com.gobdev.spring_mongodb_social_api.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 
 @RestController
@@ -30,5 +32,13 @@ public class UserResource {
             .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(userDTOs);
+    }
+
+    @GetMapping(value = "/{id}") 
+    public ResponseEntity<UserDTO> findById(@PathVariable String id) {
+        User user = userService.findById(id);
+        UserDTO userDTO = new UserDTO(user);
+
+        return ResponseEntity.ok().body(userDTO);
     }
 }
