@@ -1,34 +1,42 @@
 package com.gobdev.spring_mongodb_social_api.resources;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.gobdev.spring_mongodb_social_api.domain.User;
-import com.gobdev.spring_mongodb_social_api.dtos.UserDTO;
+import com.gobdev.spring_mongodb_social_api.dto.UserDTO;
 import com.gobdev.spring_mongodb_social_api.services.UserService;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 
 @RestController
 @RequestMapping(value = "/users")
 public class UserResource {
-
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ModelMapper modelMapper;
+    
 
     @GetMapping 
     public ResponseEntity<List<UserDTO>> findAll() {
         List<User> users = userService.findAll();
         List<UserDTO> userDTOs = users.stream()
-            .map(x -> new UserDTO(x))
+            .map(x -> modelMapper.map(x, UserDTO.class))
             .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(userDTOs);
@@ -37,8 +45,22 @@ public class UserResource {
     @GetMapping(value = "/{id}") 
     public ResponseEntity<UserDTO> findById(@PathVariable String id) {
         User user = userService.findById(id);
-        UserDTO userDTO = new UserDTO(user);
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 
         return ResponseEntity.ok().body(userDTO);
+    }
+
+    @PostMapping
+    public ResponseEntity<UserDTO> insert(@RequestBody UserDTO objDto) {
+        User user = modelMapper.map(objDto, User.class);
+        user = userService.insert(user);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(user.getId())
+            .toUri();
+
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+
+        return ResponseEntity.created(uri).body(userDTO);
     }
 }

@@ -1,9 +1,8 @@
-package com.gobdev.spring_mongodb_social_api.dtos;
+package com.gobdev.spring_mongodb_social_api.dto;
 
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.gobdev.spring_mongodb_social_api.domain.User;
 
 @JsonPropertyOrder({ "id", "name", "email" })
 public class UserDTO implements Serializable {
@@ -16,10 +15,10 @@ public class UserDTO implements Serializable {
 
     public UserDTO() {}
 
-    public UserDTO(User obj) {
-        this.id = obj.getId();
-        this.name = obj.getName();
-        this.email = obj.getEmail();
+    public UserDTO(String id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
     }
 
 
