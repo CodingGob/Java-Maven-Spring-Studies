@@ -10,6 +10,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.gobdev.spring_mongodb_social_api.domain.User;
 import com.gobdev.spring_mongodb_social_api.dto.UserDTO;
+import com.gobdev.spring_mongodb_social_api.dto.UserInsertDTO;
 import com.gobdev.spring_mongodb_social_api.services.UserService;
 
 import org.modelmapper.ModelMapper;
@@ -30,7 +31,7 @@ public class UserResource {
 
     @Autowired
     private ModelMapper modelMapper;
-    
+
 
     @GetMapping 
     public ResponseEntity<List<UserDTO>> findAll() {
@@ -51,7 +52,7 @@ public class UserResource {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> insert(@RequestBody UserDTO objDto) {
+    public ResponseEntity<UserDTO> insert(@RequestBody UserInsertDTO objDto) {
         User user = modelMapper.map(objDto, User.class);
         user = userService.insert(user);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
