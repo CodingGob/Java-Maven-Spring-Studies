@@ -16,6 +16,7 @@ import com.gobdev.spring_mongodb_social_api.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping(value = "/users")
 public class UserResource {
     @Autowired
-    private UserService userService;
+    private UserService service;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -35,7 +36,7 @@ public class UserResource {
 
     @GetMapping 
     public ResponseEntity<List<UserDTO>> findAll() {
-        List<User> users = userService.findAll();
+        List<User> users = service.findAll();
         List<UserDTO> userDTOs = users.stream()
             .map(x -> modelMapper.map(x, UserDTO.class))
             .collect(Collectors.toList());
@@ -45,7 +46,7 @@ public class UserResource {
 
     @GetMapping(value = "/{id}") 
     public ResponseEntity<UserDTO> findById(@PathVariable String id) {
-        User user = userService.findById(id);
+        User user = service.findById(id);
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 
         return ResponseEntity.ok().body(userDTO);
@@ -54,7 +55,7 @@ public class UserResource {
     @PostMapping
     public ResponseEntity<UserDTO> insert(@RequestBody UserInsertDTO objDto) {
         User user = modelMapper.map(objDto, User.class);
-        user = userService.insert(user);
+        user = service.insert(user);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
             .path("/{id}")
             .buildAndExpand(user.getId())
@@ -63,5 +64,11 @@ public class UserResource {
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 
         return ResponseEntity.created(uri).body(userDTO);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

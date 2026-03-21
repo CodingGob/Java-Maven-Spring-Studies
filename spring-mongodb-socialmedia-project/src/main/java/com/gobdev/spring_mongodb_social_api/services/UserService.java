@@ -41,4 +41,9 @@ public class UserService {
         obj.setPassword(encoder.encode(obj.getPassword()));
         return repository.insert(obj);
     }
+
+    public void delete(String id) {
+        findById(id); // Check if user exists before deleting
+        repository.deleteById(id);
+    }
 }
