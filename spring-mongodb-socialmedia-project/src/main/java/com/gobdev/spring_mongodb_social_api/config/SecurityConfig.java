@@ -14,10 +14,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable()) 
+        http.csrf(csrf -> csrf.disable())
             // Disable CSRF protection for stateless APIs (cummon for REST APIs)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) 
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // Set session management to stateless (no sessions will be created or used by Spring Security)
             .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
             // Allow all requests without authentication (for development purposes)

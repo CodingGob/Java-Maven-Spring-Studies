@@ -1,8 +1,9 @@
 package com.gobdev.spring_mongodb_social_api.services.exceptions;
 
 public class ObjectNotFoundException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
-    public ObjectNotFoundException(Object id) {
-        super("No object found with Id '" + id + "'");
+    public ObjectNotFoundException(String msg) {
+        super();
     }
 }
