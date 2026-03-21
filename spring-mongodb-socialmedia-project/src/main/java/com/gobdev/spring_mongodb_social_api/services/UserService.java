@@ -28,22 +28,41 @@ public class UserService {
 
     public User findById(String id) {
         Optional<User> user = repository.findById(id);
+
         return user.orElseThrow(() -> new ObjectNotFoundException("No user found with Id '" + id + "'"));
     }
 
     public User insert(User obj) {
-        String email = obj.getEmail();
-        User existingUser = repository.findByEmail(email);
-        if (existingUser != null) {
-            throw new UniqueViolationException("E-mail '" + email + "' already used by another user");
-        }
-
+        checkExistingEmail(obj.getEmail(), null);
         obj.setPassword(encoder.encode(obj.getPassword()));
+
         return repository.insert(obj);
     }
 
     public void delete(String id) {
-        findById(id); // Check if user exists before deleting
+        findById(id);
         repository.deleteById(id);
+    }
+
+    public User update(User obj) {
+        User entity = findById(obj.getId());
+        checkExistingEmail(obj.getEmail(), obj.getId());
+        updateData(entity, obj);
+        
+        return repository.save(entity);
+    }
+
+
+    private void updateData(User entity, User obj) {
+        entity.setName(obj.getName());
+        entity.setEmail(obj.getEmail());
+    }
+
+    private void checkExistingEmail(String email, String userId) {
+        User existingUser = repository.findByEmail(email);
+
+        if (existingUser != null && !existingUser.getId().equals(userId)) {
+            throw new UniqueViolationException("E-mail '" + email + "' already used by another user");
+        }
     }
 }
