@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.gobdev.spring_mongodb_social_api.domain.Post;
 import com.gobdev.spring_mongodb_social_api.domain.User;
 import com.gobdev.spring_mongodb_social_api.dto.AuthorDTO;
+import com.gobdev.spring_mongodb_social_api.dto.CommentDTO;
 import com.gobdev.spring_mongodb_social_api.repositories.PostRepository;
 import com.gobdev.spring_mongodb_social_api.repositories.UserRepository;
 
@@ -88,5 +89,26 @@ public class Config implements CommandLineRunner{
 
         maria.getPosts().addAll(Arrays.asList(p1, p2));
         userRepository.save(maria);
+
+
+        CommentDTO c1 = new CommentDTO(
+            "Boa viagem mano!", 
+            LocalDate.parse("2018-03-21"), 
+            new AuthorDTO(alex));
+
+        CommentDTO c2 = new CommentDTO(
+            "Aproveite!", 
+            LocalDate.parse("2018-03-22"), 
+            new AuthorDTO(bob));
+
+        CommentDTO c3 = new CommentDTO(
+            "Tenha um ótimo dia!", 
+            LocalDate.parse("2018-03-23"), 
+            new AuthorDTO(alex));
+
+        p1.getComments().addAll(Arrays.asList(c1, c2));
+        p2.getComments().add(c3);
+
+        postRepository.saveAll(Arrays.asList(p1, p2));
     }
 }

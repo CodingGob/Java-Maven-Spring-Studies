@@ -3,11 +3,15 @@ package com.gobdev.spring_mongodb_social_api.resources;
 import java.net.URI;
 import java.util.List;
 
+import javax.xml.stream.events.Comment;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.gobdev.spring_mongodb_social_api.domain.Post;
+import com.gobdev.spring_mongodb_social_api.dto.CommentDTO;
+import com.gobdev.spring_mongodb_social_api.dto.CommentUpdateInsertDTO;
 import com.gobdev.spring_mongodb_social_api.dto.PostUpdateInsertDTO;
 import com.gobdev.spring_mongodb_social_api.services.PostService;
 
@@ -50,6 +54,7 @@ public class PostResource {
     public ResponseEntity<Post> insert(@PathVariable String userId, @RequestBody PostUpdateInsertDTO objDTO) {
         Post post = modelMapper.map(objDTO, Post.class);
         post = service.insert(post, userId);
+
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
             .path("/{id}")
             .buildAndExpand(post.getId())
@@ -72,5 +77,29 @@ public class PostResource {
         service.update(post);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(value = "/{id}/comments") 
+    public ResponseEntity<List<CommentDTO>> findAllComments(@PathVariable String id) {
+        List<CommentDTO> comments = service.findAllComments(id);
+
+        return ResponseEntity.ok().body(comments);
+    }
+
+    @PostMapping(value = "/{id}/comments/{userId}") 
+    public ResponseEntity<CommentDTO> insertComment(
+        @PathVariable String id, 
+        @RequestBody CommentUpdateInsertDTO commentDTO, 
+        @PathVariable String userId
+    ) {
+        CommentDTO comment = modelMapper.map(commentDTO, CommentDTO.class);
+        comment = service.insertComment(id, comment, userId);
+
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(id)
+            .toUri();
+
+        return ResponseEntity.created(uri).body(comment);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.gobdev.spring_mongodb_social_api.domain.Post;
 import com.gobdev.spring_mongodb_social_api.domain.User;
 import com.gobdev.spring_mongodb_social_api.dto.AuthorDTO;
+import com.gobdev.spring_mongodb_social_api.dto.CommentDTO;
 import com.gobdev.spring_mongodb_social_api.repositories.PostRepository;
 import com.gobdev.spring_mongodb_social_api.services.exceptions.ObjectNotFoundException;
 
@@ -35,8 +36,8 @@ public class PostService {
 
     public Post insert(Post obj, String userId) {
         User user = userService.findById(userId);
-        obj.setDate(LocalDate.now());
         obj.setAuthor(new AuthorDTO(user));
+        obj.setDate(LocalDate.now());
         repository.insert(obj);
 
         user.getPosts().add(obj);
@@ -52,13 +53,30 @@ public class PostService {
 
     public Post update(Post obj) {
         Post entity = findById(obj.getId());
-        updateData(entity, obj);
+        updatePostData(entity, obj);
         
         return repository.save(entity);
     }
 
+    public List<CommentDTO> findAllComments(String id) {
+        Post post = findById(id);
 
-    private void updateData(Post entity, Post obj) {
+        return post.getComments();
+    }
+
+    public CommentDTO insertComment(String id, CommentDTO comment, String userId) {
+        Post post = findById(id);
+        User user = userService.findById(userId);
+        comment.setAuthor(new AuthorDTO(user));
+        comment.setDate(LocalDate.now());
+
+        post.getComments().add(comment);
+        repository.save(post);
+
+        return comment;
+    }
+
+    private void updatePostData(Post entity, Post obj) {
         entity.setUpdateDate(LocalDate.now());
         entity.setTitle(obj.getTitle());
         entity.setBody(obj.getBody());
