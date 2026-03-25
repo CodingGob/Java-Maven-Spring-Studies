@@ -1,9 +1,12 @@
 package com.gobdev.spring_mongodb_social_api.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "user")
@@ -16,6 +19,9 @@ public class User implements Serializable {
     @Indexed(unique = true)
     private String email;
     private String password;
+
+    @DBRef(lazy = true) //Lazy loading: makes the posts only load when accessed, not when the user is loaded.
+    private List<Post> posts = new ArrayList<>();
 
 
     public User() {}
@@ -60,6 +66,10 @@ public class User implements Serializable {
         this.password = password;
     }
 
+    public List<Post> getPosts() {
+        return posts;
+    }
+
 
     @Override
     public int hashCode() {
@@ -84,5 +94,9 @@ public class User implements Serializable {
         } else if (!id.equals(other.id))
             return false;
         return true;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
     }
 }
