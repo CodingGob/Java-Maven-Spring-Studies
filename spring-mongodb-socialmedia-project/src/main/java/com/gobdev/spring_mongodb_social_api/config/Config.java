@@ -69,14 +69,16 @@ public class Config implements CommandLineRunner{
 
         Post p1 = new Post(
             null, 
-            LocalDate.parse("2018-03-21"), 
+            LocalDate.parse("2018-03-21"),
+            null, 
             "Partiu viagem", 
             "Vou viajar para São Paulo. Abraços!", 
             new AuthorDTO(maria));
 
         Post p2 = new Post(
             null, 
-            LocalDate.parse("2018-03-23"), 
+            LocalDate.parse("2018-03-23"),
+            null, 
             "Bom dia", 
             "Acordei feliz hoje!", 
             new AuthorDTO(maria));

@@ -5,7 +5,6 @@ import java.io.Serializable;
 public class UserInsertDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String id;
     private String name;
     private String email;
     private String password;
@@ -13,21 +12,12 @@ public class UserInsertDTO implements Serializable {
 
     public UserInsertDTO() {}
 
-    public UserInsertDTO(String id, String name, String email, String password) {
-        this.id = id;
+    public UserInsertDTO(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
     }
 
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

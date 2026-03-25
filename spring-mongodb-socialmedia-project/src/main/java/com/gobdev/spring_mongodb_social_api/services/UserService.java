@@ -51,7 +51,10 @@ public class UserService {
         
         return repository.save(entity);
     }
-
+    
+    public void saveUser(User user) {
+        repository.save(user);
+    }
 
     private void updateData(User entity, User obj) {
         entity.setName(obj.getName());

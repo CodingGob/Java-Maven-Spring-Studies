@@ -15,6 +15,7 @@ public class Post implements Serializable {
     @Id
     private String id;
     private LocalDate date;
+    private LocalDate updateDate;
     private String title;
     private String body;
 
@@ -23,9 +24,10 @@ public class Post implements Serializable {
 
     public Post() {}
 
-    public Post(String id, LocalDate date, String title, String body, AuthorDTO author) {
+    public Post(String id, LocalDate date, LocalDate updateDate, String title, String body, AuthorDTO author) {
         this.id = id;
         this.date = date;
+        this.updateDate = updateDate;
         this.title = title;
         this.body = body;
         this.author = author;
@@ -46,6 +48,14 @@ public class Post implements Serializable {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public LocalDate getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(LocalDate updateDate) {
+        this.updateDate = updateDate;
     }
 
     public String getTitle() {
