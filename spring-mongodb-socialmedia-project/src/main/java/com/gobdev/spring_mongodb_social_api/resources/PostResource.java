@@ -11,6 +11,7 @@ import com.gobdev.spring_mongodb_social_api.domain.Post;
 import com.gobdev.spring_mongodb_social_api.dto.CommentDTO;
 import com.gobdev.spring_mongodb_social_api.dto.CommentUpdateInsertDTO;
 import com.gobdev.spring_mongodb_social_api.dto.PostUpdateInsertDTO;
+import com.gobdev.spring_mongodb_social_api.resources.util.URL;
 import com.gobdev.spring_mongodb_social_api.services.PostService;
 
 import org.modelmapper.ModelMapper;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -80,7 +83,23 @@ public class PostResource {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping(value = "/titlesearch") // posts/titlesearch?text=***ENCODED TEXT***
+    public ResponseEntity<List<Post>> findByTitle(@RequestParam(value = "text", defaultValue = "") String text) {
+        text = URL.decodeParam(text);
+        List<Post> posts = service.findByTitle(text);
+
+        return ResponseEntity.ok().body(posts);
+    }
+
+    @GetMapping(value = "/authorsearch")
+    public ResponseEntity<List<Post>> findByAuthor(@RequestParam(defaultValue = "") String authorName) {
+        authorName = URL.decodeParam(authorName);
+        List<Post> posts = service.findByAuthor(authorName);
+
+        return ResponseEntity.ok().body(posts);
+    }
     
+
     // COMMENT METHODS
 
     @GetMapping(value = "/{id}/comments") 

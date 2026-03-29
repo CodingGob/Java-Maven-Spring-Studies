@@ -61,7 +61,15 @@ public class PostService {
         
         return repository.save(entity);
     }
-    
+
+    public List<Post> findByTitle(String text) {
+        return repository.findByTitleContainingIgnoreCase(text);
+    }
+
+    public List<Post> findByAuthor(String authorName) {
+        return repository.findPostByAuthor(authorName);
+    }
+
 
     // COMMENT METHODS
 
