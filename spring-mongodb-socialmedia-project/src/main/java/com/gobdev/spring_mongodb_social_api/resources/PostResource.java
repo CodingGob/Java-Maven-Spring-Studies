@@ -3,8 +3,6 @@ package com.gobdev.spring_mongodb_social_api.resources;
 import java.net.URI;
 import java.util.List;
 
-import javax.xml.stream.events.Comment;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -25,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
+
 @RestController
 @RequestMapping(value = "/posts")
 public class PostResource {
@@ -35,6 +34,8 @@ public class PostResource {
     @Autowired
     private ModelMapper modelMapper;
 
+
+    // POST METHODS
 
     @GetMapping 
     public ResponseEntity<List<Post>> findAll() {
@@ -71,13 +72,16 @@ public class PostResource {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Post> update(@PathVariable String id, @RequestBody PostUpdateInsertDTO objDTO) {
+    public ResponseEntity<Void> update(@PathVariable String id, @RequestBody PostUpdateInsertDTO objDTO) {
         Post post = modelMapper.map(objDTO, Post.class);
         post.setId(id); // Ensure the ID is set for the update operation
         service.update(post);
 
         return ResponseEntity.noContent().build();
     }
+
+    
+    // COMMENT METHODS
 
     @GetMapping(value = "/{id}/comments") 
     public ResponseEntity<List<CommentDTO>> findAllComments(@PathVariable String id) {
@@ -86,6 +90,13 @@ public class PostResource {
         return ResponseEntity.ok().body(comments);
     }
 
+    @GetMapping("/comments/{id}")
+    public ResponseEntity<CommentDTO> findCommentById(@PathVariable String id) {
+        CommentDTO comment = service.findCommentById(id);
+
+        return ResponseEntity.ok().body(comment);
+    }
+    
     @PostMapping(value = "/{id}/comments/{userId}") 
     public ResponseEntity<CommentDTO> insertComment(
         @PathVariable String id, 
@@ -101,5 +112,21 @@ public class PostResource {
             .toUri();
 
         return ResponseEntity.created(uri).body(comment);
+    }
+
+    @DeleteMapping(value = "/comments/{id}")
+    public ResponseEntity<Void> deleteComment(@PathVariable String id) {
+        service.deleteComment(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("comments/{id}")
+    public ResponseEntity<Void> updateComment(@PathVariable String id, @RequestBody CommentUpdateInsertDTO commentDTO) {
+        CommentDTO comment = modelMapper.map(commentDTO, CommentDTO.class);
+        comment.setId(id);
+        service.updateComment(comment);
+
+        return ResponseEntity.noContent().build();
     }
 }

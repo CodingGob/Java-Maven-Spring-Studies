@@ -3,6 +3,7 @@ package com.gobdev.spring_mongodb_social_api.services;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,8 @@ public class PostService {
     private UserService userService;
 
 
+    // POST METHODS
+
     public List<Post> findAll() {
         return repository.findAll();
     }
@@ -36,6 +39,7 @@ public class PostService {
 
     public Post insert(Post obj, String userId) {
         User user = userService.findById(userId);
+
         obj.setAuthor(new AuthorDTO(user));
         obj.setDate(LocalDate.now());
         repository.insert(obj);
@@ -57,28 +61,81 @@ public class PostService {
         
         return repository.save(entity);
     }
+    
 
-    public List<CommentDTO> findAllComments(String id) {
-        Post post = findById(id);
+    // COMMENT METHODS
+
+    public CommentDTO findCommentById(String commentId) {
+        Post post = findPostByCommentId(commentId);
+
+        return post.getComments().stream()
+            .filter(c -> c.getId().equals(commentId))
+            .findFirst()
+            .orElseThrow(() -> new ObjectNotFoundException("Comment inconsistency in post"));
+    }
+
+    public List<CommentDTO> findAllComments(String postId) {
+        Post post = findById(postId);
 
         return post.getComments();
     }
 
-    public CommentDTO insertComment(String id, CommentDTO comment, String userId) {
-        Post post = findById(id);
+    public CommentDTO insertComment(String commentId, CommentDTO commentObj, String userId) {
+        Post post = findById(commentId);
         User user = userService.findById(userId);
-        comment.setAuthor(new AuthorDTO(user));
-        comment.setDate(LocalDate.now());
 
-        post.getComments().add(comment);
+        commentObj.setId(UUID.randomUUID().toString());
+        commentObj.setDate(LocalDate.now());
+        commentObj.setAuthor(new AuthorDTO(user));
+
+        post.getComments().add(commentObj);
         repository.save(post);
 
-        return comment;
+        return commentObj;
     }
+
+    public void deleteComment(String commentId) {
+        Post post = findPostByCommentId(commentId);
+
+        boolean removed = post.getComments().removeIf(c -> c.getId().equals(commentId));
+
+        if (!removed) {
+            throw new ObjectNotFoundException("Comment inconsistency in post");
+        }
+
+        repository.save(post);
+    }
+
+    public CommentDTO updateComment(CommentDTO commentObj) {
+        Post post = findPostByCommentId(commentObj.getId());
+        
+        CommentDTO entity = post.getComments().stream()
+            .filter(c -> c.getId().equals(commentObj.getId()))
+            .findFirst()
+            .orElseThrow(() -> new ObjectNotFoundException("Comment inconsistency in post"));
+
+        updateCommentData(entity, commentObj);
+
+        repository.save(post);
+        return entity;
+    }
+
+
+    // SUPPORT METHODS
 
     private void updatePostData(Post entity, Post obj) {
         entity.setUpdateDate(LocalDate.now());
         entity.setTitle(obj.getTitle());
         entity.setBody(obj.getBody());
+    }
+
+    private Post findPostByCommentId(String commentId) {
+        Optional<Post> post = repository.findPostByCommentId(commentId);
+        return post.orElseThrow(() -> new ObjectNotFoundException("No comment found with Id '" + commentId + "'"));
+    }
+
+    private void updateCommentData(CommentDTO entity, CommentDTO obj) {
+        entity.setUpdateDate(LocalDate.now());
+        entity.setText(obj.getText());
     }
 }

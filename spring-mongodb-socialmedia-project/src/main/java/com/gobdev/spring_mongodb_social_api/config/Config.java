@@ -2,6 +2,7 @@ package com.gobdev.spring_mongodb_social_api.config;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -94,18 +95,27 @@ public class Config implements CommandLineRunner{
         CommentDTO c1 = new CommentDTO(
             "Boa viagem mano!", 
             LocalDate.parse("2018-03-21"), 
+            null,
             new AuthorDTO(alex));
+
+        c1.setId(UUID.randomUUID().toString());
 
         CommentDTO c2 = new CommentDTO(
             "Aproveite!", 
             LocalDate.parse("2018-03-22"), 
+            null,
             new AuthorDTO(bob));
+
+        c2.setId(UUID.randomUUID().toString());
 
         CommentDTO c3 = new CommentDTO(
             "Tenha um ótimo dia!", 
             LocalDate.parse("2018-03-23"), 
+            null,
             new AuthorDTO(alex));
 
+        c3.setId(UUID.randomUUID().toString());
+        
         p1.getComments().addAll(Arrays.asList(c1, c2));
         p2.getComments().add(c3);
 

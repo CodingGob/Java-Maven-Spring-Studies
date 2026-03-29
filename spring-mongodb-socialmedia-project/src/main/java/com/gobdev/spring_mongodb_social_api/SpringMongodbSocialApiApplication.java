@@ -9,5 +9,4 @@ public class SpringMongodbSocialApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SpringMongodbSocialApiApplication.class, args);
 	}
-
 }
