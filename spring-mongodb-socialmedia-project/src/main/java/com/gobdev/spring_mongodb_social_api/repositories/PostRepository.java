@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -27,5 +29,5 @@ public interface PostRepository extends MongoRepository<Post, String> {
 
     // Custom query using @Query annotation to find posts that contain a certain text in the title, body or comments and were created between two dates
     @Query("{ $and: [ { $or: [ { 'title': { $regex: ?0, $options: 'i' } }, { 'body': { $regex: ?0, $options: 'i' } }, { 'comments.text': { $regex: ?0, $options: 'i' } } ] }, { 'date': { $gte: ?1 } }, { 'date': { $lte: ?2 } } ] }")
-    List<Post> textAndDateSearch(String text, LocalDate minDate, LocalDate maxDate);
+    Page<Post> textAndDateSearch(String text, LocalDate minDate, LocalDate maxDate, Pageable pageable);
 }

@@ -11,12 +11,14 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.gobdev.spring_mongodb_social_api.domain.Post;
 import com.gobdev.spring_mongodb_social_api.dto.CommentDTO;
 import com.gobdev.spring_mongodb_social_api.dto.CommentUpdateInsertDTO;
+import com.gobdev.spring_mongodb_social_api.dto.PostPageDTO;
 import com.gobdev.spring_mongodb_social_api.dto.PostUpdateInsertDTO;
 import com.gobdev.spring_mongodb_social_api.resources.util.URL;
 import com.gobdev.spring_mongodb_social_api.services.PostService;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -101,17 +103,21 @@ public class PostResource {
     }
 
     @GetMapping(value = "/textAndDateSearch") // posts/textAndDateSearch?text=proveite&minDate=2018-03-18&maxDate=2018-03-21
-    public ResponseEntity<List<Post>> textAndDateSearch(
+    public ResponseEntity<PostPageDTO> textAndDateSearch(
         @RequestParam(defaultValue = "") String text, 
         @RequestParam(defaultValue = "") String minDate,
-        @RequestParam(defaultValue = "") String maxDate
+        @RequestParam(defaultValue = "") String maxDate,
+        @RequestParam(defaultValue = "0") int page, // Initial page (0)
+        @RequestParam(defaultValue = "10") int size // Default of 10 posts
     ) {
         text = URL.decodeParam(text);
         LocalDate min = URL.convertDate(minDate, LocalDate.parse("1970-01-01")); //minimum date accepted by MongoDB
         LocalDate max = URL.convertDate(maxDate, LocalDate.now().plusYears(100));
-        List<Post> posts = service.textAndDateSearch(text, min, max);
 
-        return ResponseEntity.ok().body(posts); 
+        Page<Post> postsPage = service.textAndDateSearch(text, min, max, page, size);
+        PostPageDTO response = new PostPageDTO(postsPage);
+
+        return ResponseEntity.ok().body(response); 
     }
     
 

@@ -6,6 +6,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.gobdev.spring_mongodb_social_api.domain.Post;
@@ -70,8 +74,10 @@ public class PostService {
         return repository.findPostByAuthor(authorName);
     }
 
-    public List<Post> textAndDateSearch(String text, LocalDate minDate, LocalDate maxDate) {
-        return repository.textAndDateSearch(text, minDate, maxDate);
+    public Page<Post> textAndDateSearch(String text, LocalDate minDate, LocalDate maxDate, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending());
+
+        return repository.textAndDateSearch(text, minDate, maxDate, pageable);
     }
 
 
