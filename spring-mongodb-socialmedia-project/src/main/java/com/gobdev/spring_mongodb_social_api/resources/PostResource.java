@@ -1,6 +1,7 @@
 package com.gobdev.spring_mongodb_social_api.resources;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,7 +84,7 @@ public class PostResource {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping(value = "/titlesearch") // posts/titlesearch?text=***ENCODED TEXT***
+    @GetMapping(value = "/titlesearch") // posts/titlesearch?text=bom%20dia
     public ResponseEntity<List<Post>> findByTitle(@RequestParam(value = "text", defaultValue = "") String text) {
         text = URL.decodeParam(text);
         List<Post> posts = service.findByTitle(text);
@@ -91,12 +92,26 @@ public class PostResource {
         return ResponseEntity.ok().body(posts);
     }
 
-    @GetMapping(value = "/authorsearch")
-    public ResponseEntity<List<Post>> findByAuthor(@RequestParam(defaultValue = "") String authorName) {
+    @GetMapping(value = "/authorsearch") // posts/authorsearch?authorName=Maria%20brown
+    public ResponseEntity<List<Post>> findByAuthor(@RequestParam(defaultValue = "") String authorName) { //if the value has the same name of the parameter, you don't need to specify
         authorName = URL.decodeParam(authorName);
         List<Post> posts = service.findByAuthor(authorName);
 
         return ResponseEntity.ok().body(posts);
+    }
+
+    @GetMapping(value = "/textAndDateSearch") // posts/textAndDateSearch?text=proveite&minDate=2018-03-18&maxDate=2018-03-21
+    public ResponseEntity<List<Post>> textAndDateSearch(
+        @RequestParam(defaultValue = "") String text, 
+        @RequestParam(defaultValue = "") String minDate,
+        @RequestParam(defaultValue = "") String maxDate
+    ) {
+        text = URL.decodeParam(text);
+        LocalDate min = URL.convertDate(minDate, LocalDate.parse("1970-01-01")); //minimum date accepted by MongoDB
+        LocalDate max = URL.convertDate(maxDate, LocalDate.now().plusYears(100));
+        List<Post> posts = service.textAndDateSearch(text, min, max);
+
+        return ResponseEntity.ok().body(posts); 
     }
     
 

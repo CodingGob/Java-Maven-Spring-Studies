@@ -70,6 +70,10 @@ public class PostService {
         return repository.findPostByAuthor(authorName);
     }
 
+    public List<Post> textAndDateSearch(String text, LocalDate minDate, LocalDate maxDate) {
+        return repository.textAndDateSearch(text, minDate, maxDate);
+    }
+
 
     // COMMENT METHODS
 
