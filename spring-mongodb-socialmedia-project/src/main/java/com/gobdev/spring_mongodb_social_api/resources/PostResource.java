@@ -16,6 +16,8 @@ import com.gobdev.spring_mongodb_social_api.dto.PostUpdateInsertDTO;
 import com.gobdev.spring_mongodb_social_api.resources.util.URL;
 import com.gobdev.spring_mongodb_social_api.services.PostService;
 
+import jakarta.validation.Valid;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -58,7 +60,7 @@ public class PostResource {
     }
 
     @PostMapping(value = "/{userId}") 
-    public ResponseEntity<Post> insert(@PathVariable String userId, @RequestBody PostUpdateInsertDTO objDTO) {
+    public ResponseEntity<Post> insert(@PathVariable String userId, @Valid @RequestBody PostUpdateInsertDTO objDTO) {
         Post post = modelMapper.map(objDTO, Post.class);
         post = service.insert(post, userId);
 
@@ -104,12 +106,12 @@ public class PostResource {
 
     @GetMapping(value = "/textAndDateSearch") // posts/textAndDateSearch?text=proveite&minDate=2018-03-18&maxDate=2018-03-21
     public ResponseEntity<PostPageDTO> textAndDateSearch(
-        @RequestParam(defaultValue = "") String text, 
-        @RequestParam(defaultValue = "") String minDate,
-        @RequestParam(defaultValue = "") String maxDate,
-        @RequestParam(defaultValue = "0") int page, // Initial page (0)
-        @RequestParam(defaultValue = "10") int size // Default of 10 posts
-    ) {
+            @RequestParam(defaultValue = "") String text, 
+            @RequestParam(defaultValue = "") String minDate,
+            @RequestParam(defaultValue = "") String maxDate,
+            @RequestParam(defaultValue = "0") int page, // Initial page (0)
+            @RequestParam(defaultValue = "10") int size // Default of 10 posts
+            ) {
         text = URL.decodeParam(text);
         LocalDate min = URL.convertDate(minDate, LocalDate.parse("1970-01-01")); //minimum date accepted by MongoDB
         LocalDate max = URL.convertDate(maxDate, LocalDate.now().plusYears(100));
@@ -139,10 +141,10 @@ public class PostResource {
     
     @PostMapping(value = "/{id}/comments/{userId}") 
     public ResponseEntity<CommentDTO> insertComment(
-        @PathVariable String id, 
-        @RequestBody CommentUpdateInsertDTO commentDTO, 
-        @PathVariable String userId
-    ) {
+            @PathVariable String id, 
+            @Valid @RequestBody CommentUpdateInsertDTO commentDTO, 
+            @PathVariable String userId
+        ) {
         CommentDTO comment = modelMapper.map(commentDTO, CommentDTO.class);
         comment = service.insertComment(id, comment, userId);
 
@@ -162,7 +164,10 @@ public class PostResource {
     }
 
     @PutMapping("comments/{id}")
-    public ResponseEntity<Void> updateComment(@PathVariable String id, @RequestBody CommentUpdateInsertDTO commentDTO) {
+    public ResponseEntity<Void> updateComment(
+            @PathVariable String id, 
+            @RequestBody CommentUpdateInsertDTO commentDTO
+        ) {
         CommentDTO comment = modelMapper.map(commentDTO, CommentDTO.class);
         comment.setId(id);
         service.updateComment(comment);
